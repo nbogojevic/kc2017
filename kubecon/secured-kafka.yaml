@@ -1,0 +1,6 @@
+kafka:
+  secured: true
+
+kafka-operator:
+  manageAcl: true
+  secured: true

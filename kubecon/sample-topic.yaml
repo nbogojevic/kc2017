@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sample-topic
+  labels:
+    config: kafka-topic
+data:
+  partitions: "20"
+  replication-factor: "2"
+  properties: |
+    retention.ms=1000000

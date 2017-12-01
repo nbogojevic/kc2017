@@ -1,0 +1,84 @@
+---
+apiVersion: v1
+kind: List
+items:
+- apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    labels:
+      app: kafka-producer
+      demo: client
+      kubecon: demo
+    name: kafka-producer
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 2
+    selector:
+      matchLabels:
+        app: kafka-producer
+    template:
+      metadata:
+        labels:
+          app: kafka-producer
+          demo: client
+      spec:
+        containers:
+        - env:
+          - name: JAVA_MAIN_CLASS
+            value: nb.kubecon.KafkaProducerSample
+          - name: JAVA_OPTIONS
+            value: "-Djava.security.auth.login.config=/opt/kafka/auth/kafka-client-jaas.conf"
+          - name: USE_ACL
+            value: "true"
+          image: nbogojevic/kafka-clients
+          imagePullPolicy: IfNotPresent
+          name: nbogojevic-kafka-clients
+          securityContext:
+            privileged: false
+          volumeMounts:        
+          - name: kafka-credentials
+            mountPath: /opt/kafka/auth
+        volumes:      
+        - name: kafka-credentials
+          secret:
+            secretName: kafka-cluster-kafka-client-auth
+- apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    labels:
+      app: kafka-consumer
+      demo: client
+      kubecon: demo
+    name: kafka-consumer
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 2
+    selector:
+      matchLabels:
+        app: kafka-consumer
+    template:
+      metadata:
+        labels:
+          app: kafka-consumer
+          demo: client
+      spec:
+        containers:
+        - env:
+          - name: JAVA_MAIN_CLASS
+            value: nb.kubecon.KafkaConsumerSample
+          - name: JAVA_OPTIONS
+            value: "-Djava.security.auth.login.config=/opt/kafka/auth/kafka-client-jaas.conf"
+          - name: USE_ACL
+            value: "true"
+          image: nbogojevic/kafka-clients
+          imagePullPolicy: IfNotPresent
+          name: nbogojevic-kafka-clients
+          securityContext:
+            privileged: false
+          volumeMounts:        
+          - name: kafka-credentials
+            mountPath: /opt/kafka/auth
+        volumes:      
+        - name: kafka-credentials
+          secret:
+            secretName: kafka-cluster-kafka-client-auth
